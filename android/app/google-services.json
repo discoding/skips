@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "744037862434",
+    "project_id": "skipsmaritiem-e4182",
+    "storage_bucket": "skipsmaritiem-e4182.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:744037862434:android:6b61ca7c76de97d20f0e7b",
+        "android_client_info": {
+          "package_name": "com.example.skipsmaritiem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "744037862434-s0r20tu157q8od5uup6sulgg0eg5137o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgAOqV9T3IWd6-UTvunRLISng4paFN7IQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "744037862434-s0r20tu157q8od5uup6sulgg0eg5137o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "744037862434-6v00u30ge6tns9clgs8figmrstcgfjrf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.skipsmaritiem"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
