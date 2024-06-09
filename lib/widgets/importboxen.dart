@@ -21,11 +21,21 @@ class ImportBoxen {
          // final fields = const CsvToListConverter(eol: "\r\n").convert(input);
          //       print(fields);
           for (final row in fields) {
-            final Box box = Box(
+              String nummer = row[2].toString();
+
+              // Format nummer field to have at least 3 characters
+              if (nummer.length == 1) {
+                nummer = '00' + nummer;
+              } else if (nummer.length == 2) {
+                nummer = '0' + nummer;
+              }
+              nummer = row[0].toString() + ' '+ nummer;
+
+              final Box box = Box(
               status: row[5].toString() =='',
               steiger: row[0].toString(),
               typeBox: row[1].toString(), // Assuming 'Type box' is in the second column
-              nummer: row[2].toString(),
+              nummer:  nummer,
               lengte: double.parse(row[3].toString().replaceAll(',', '.')),
               breedte: double.parse(row[4].toString().replaceAll(',', '.')),
               bootnaamvlh: row[5].toString(),
@@ -46,10 +56,20 @@ class ImportBoxen {
         final fields = await input.transform(utf8.decoder).transform(CsvToListConverter(eol: "\r\n")).toList();
 
         for (final row in fields) {
+          String nummer = row[2].toString();
+
+          // Format nummer field to have at least 3 characters
+          if (nummer.length == 1) {
+            nummer = '00' + nummer;
+          } else if (nummer.length == 2) {
+            nummer = '0' + nummer;
+          }
+          nummer = nummer + ' ' + row[2].toString();
+
           final Box box = Box(
             steiger: row[0].toString(),
             typeBox: row[1].toString(), // Assuming 'Type box' is in the second column
-            nummer: row[2].toString(),
+            nummer:  nummer,
             lengte: double.parse(row[3].toString().replaceAll(',', '.')),
             breedte: double.parse(row[4].toString().replaceAll(',', '.')),
             bootnaamvlh: row[5].toString(),

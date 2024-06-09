@@ -16,6 +16,7 @@ class BoxProvider extends ChangeNotifier {
   String get bootnaam => _box.bootnaam ?? '';
   String get bootnaamvlh => _box.bootnaamvlh ?? '';
   String get steiger => _box.steiger ?? '';
+  List<History> get archief => _box.archief!;
 
   // Setters for individual box fields
   set nummer(String value) {
@@ -67,7 +68,10 @@ class BoxProvider extends ChangeNotifier {
     _box.steiger = value;
     notifyListeners();
   }
-
+  set archief(List<History> value) {
+    _box.archief = value;
+    notifyListeners();
+  }
   // Getter for the complete box instance
   Box get box => _box;
 

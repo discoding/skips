@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 
 import '../providers/fliterprovider.dart';
 import '/models/boxmodel.dart';
+import '/models/legeboxen.dart';
 
 class BoxService {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -23,7 +24,7 @@ class BoxService {
 
   Future<void> updateBox(Box box) async {
     try {
-      await FirebaseFirestore.instance
+      await _firestore
           .collection('boxes')
           .doc(box.id)
           .update(box.toMap());
@@ -38,7 +39,7 @@ class BoxService {
         .snapshots()
         .map((snapshot) {
       List<Box> boxList = [];
-      snapshot.docs.forEach((DocumentSnapshot document) {
+      for (var document in snapshot.docs) {
         Box box = Box.fromSnapshot(document);
         if (box.nummer.toString().length == 1) {
           box.nummer = '00' + box.nummer.toString();
@@ -46,12 +47,47 @@ class BoxService {
           box.nummer = '0' + box.nummer.toString();
         }
         boxList.add(box);
-      });
+      }
       boxList.sort((a, b) => a.nummer.toString().compareTo(b.nummer.toString()));
       return boxList;
     });
   }
+  Future<void> archiveStatus() async {
+    FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+    QuerySnapshot snapshot = await _firestore.collection('boxes').get();
+    DateTime now = DateTime.now();
+    DateTime dateOnly = DateTime(now.year, now.month, now.day);
+
+    for (var document in snapshot.docs) {
+      Box box = Box.fromSnapshot(document);
+      bool entryExistsForToday=false;
+      // Initialize archief if it doesn't exist
+      List<History> updatedArchief = box.archief ?? [];
+
+      // Check if an entry for the current date already exists
+      entryExistsForToday = box.archief?.any((history) =>
+      history.date?.year == dateOnly.year &&
+          history.date?.month == dateOnly.month &&
+          history.date?.day == dateOnly.day) ??
+          false;
+
+      // If an entry doesn't exist for today, add it
+      if (!entryExistsForToday) {
+        // Add the new history entry
+        List<History> updatedArchief = box.archief ?? [];
+        updatedArchief.add(History(date: dateOnly, status: box.status));
+
+        // Convert the updated archive to a list of maps
+        List<Map<String, dynamic>> archiefMaps = updatedArchief.map((history) => history.toMap()).toList();
+
+        // Update the Firestore document
+        await _firestore.collection('boxes').doc(box.id).update({
+          'archief': archiefMaps,
+        });
+      }
+    }
+  }
   Future<void> showCreateBoxForm(BuildContext context) async {
     Box newBox = Box.placeholder();
     bool isConfirmed = await showDialog(
@@ -137,13 +173,33 @@ class BoxService {
   }
 
   Future<void> uploadBoxesToFirebase(List<Box> boxes) async {
-    await Firebase.initializeApp();
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     for (Box box in boxes) {
-      await firestore.collection('boxes').add(box.toMap());
+      await _firestore.collection('boxes').add(box.toMap());
     }
   }
+  Future<void> DownloadBoxes() async {
+    LegeBoxen bu = LegeBoxen.placeholder();
+    bu.date = DateTime.now();
+    bu.legeboxen=[];
+
+    await _firestore.collection('boxes').get().
+    then((QuerySnapshot snapshot) {
+
+      for (var doc in snapshot.docs) {
+        Box box=Box.fromSnapshot(doc);
+        box.datum=DateTime.now();
+        _firestore.collection('archive').add(box.toMap() );}
+
+
+      }
+
+
+    );
+  }
+  //
+  //  }
+ // }
 
   void importBoxesToFirebase() async {
     List<List<dynamic>> csvRows = await readCSV();

@@ -1,6 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../assets/constants.dart';
+class History {
+  DateTime? date;
+  bool? status;
+
+  History({this.date, this.status});
+
+  // Convert a History object to a Map
+  Map<String, dynamic> toMap() {
+    return {
+      'date': date?.toIso8601String(),
+      'status': status,
+    };
+  }
+
+  // Create a History object from a Map
+  factory History.fromMap(Map<String, dynamic> map) {
+    return History(
+      date: DateTime.parse(map['date']),
+      status: map['status'],
+    );
+  }
+}
 
 class Box {
   String? id;
@@ -15,6 +37,8 @@ class Box {
   String? bootnaamvlh;
   bool? passant;
   String? steiger;
+  List<History>? archief;
+
   // Computed property: true if bootnaamvlh is not empty, false otherwise
   bool get verhuurd => bootnaamvlh?.isNotEmpty ?? false;
 
@@ -33,7 +57,7 @@ class Box {
   Box({
     this.id,
     this.nummer,
-    this.typeBox, // Added field
+    this.typeBox,
     this.status,
     this.lengte,
     this.breedte,
@@ -43,6 +67,7 @@ class Box {
     this.bootnaamvlh,
     this.passant,
     this.steiger,
+    this.archief,
   });
 
   // Default constructor for a placeholder box
@@ -58,7 +83,8 @@ class Box {
         bootnaam = '',
         bootnaamvlh = '',
         passant = false,
-        steiger = '';
+        steiger = '',
+        archief = [];
 
   // Convert the 'Box' object to a map for storing in Firestore
   Map<String, dynamic> toMap() {
@@ -93,6 +119,10 @@ class Box {
       bootnaamvlh: data['bootnaamvlh'],
       passant: data['passant'],
       steiger: data['steiger'],
+      archief:  (data['archief'] as List<dynamic>?)
+            ?.map((item) => History.fromMap(item as Map<String, dynamic>))
+            .toList()
+
     );
   }
 }

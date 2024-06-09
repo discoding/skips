@@ -14,6 +14,7 @@ import 'package:skipsmaritiem/widgets/boxlist.dart';
 import 'package:skipsmaritiem/widgets/boxprint.dart';
 import 'package:skipsmaritiem/widgets/filterboxes.dart';
 import 'package:skipsmaritiem/widgets/importboxen.dart';
+import 'package:skipsmaritiem/widgets/opmerkingenlist.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
               create: (context) => FilterProvider()),
         ],
         child: MaterialApp(
-          title: 'Flutter Demo',
+          title: 'Skipsmaritiem',
           theme: ThemeData(
             // This is the theme of your application.
             //
@@ -86,14 +87,28 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     FilterProvider activefilter = Provider.of<FilterProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
           IconButton(
+              icon: Icon(Icons.note_outlined),
+
+              onPressed: () {
+
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Dialog(child: opmerkingenPrint());
+                  },
+                );
+              }),
+          IconButton(
               icon: Icon(Icons.print),
 
               onPressed: () {
+
 
                 showDialog(
                   context: context,
@@ -102,6 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                 );
               }),
+
           IconButton(
               icon: activefilter.isFiltered! // Check if any filter is applied
                   ? Icon(Icons
@@ -134,13 +150,63 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('lib/assets/watersurface.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: BoxList(),
-      ),
+        image: DecorationImage(
+        image: AssetImage('lib/assets/watersurface.png'),
+        fit: BoxFit.cover,
+    ),
+    ),
+    child: CustomPaint(
+    painter: GridPainter(),
+    child: BoxList(),
+    )));
+
+
+  }}
+
+class GridPainter extends CustomPainter {
+@override
+void paint(Canvas canvas, Size size) {
+  final paint = Paint()
+    ..color = Colors.red // Line color
+    ..strokeWidth = 1.0; // Line width
+
+  final textStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 15,
+  );
+
+  final int numberOfLines = 30; // Number of vertical lines
+  final double spacing = size.width / numberOfLines;
+
+  for (int i = 0; i <= numberOfLines; i++) {
+    final double x = i * spacing;
+    final String numberText = (31-(i + 1)).toString(); // Start from 1 to 30
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: numberText, style: textStyle,),
+      textDirection: TextDirection.ltr,
     );
+
+    // Layout the text
+    textPainter.layout();
+
+    // Calculate the position to draw the text (adjust for text width)
+    final double textX = x - textPainter.width / 2;
+    final double top = 0; // Adjust this value for vertical positioning
+    final double down = size.height-30;
+
+  ; // Adjust this value for vertical positioning
+
+    // Draw the line
+    canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+
+    // Draw the number
+    if (i.isEven){ textPainter.paint(canvas, Offset(textX, top));}
+      else {textPainter.paint(canvas, Offset(textX, down));}
   }
+}
+
+@override
+bool shouldRepaint(covariant CustomPainter oldDelegate) {
+  return false;
+}
 }
